@@ -10,7 +10,7 @@ public class ReloadInterface : MonoBehaviour
     
     void Start()
     {
-        
+        _player = FindObjectOfType<Player>().transform;
     }
 
     void Update()
