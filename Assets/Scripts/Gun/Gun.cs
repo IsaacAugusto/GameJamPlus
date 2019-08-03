@@ -6,7 +6,7 @@ public abstract class Gun : MonoBehaviour
 {
     [SerializeField] private Transform _bulletSpawnPosition;
     private ReloadInterface _reloadInterface;
-    protected float _damage;
+    protected float _damage = 1;
     protected float _magSize = 12;
     protected float _reloadTime = 5;
     protected float _shootDelay = .2f;
@@ -81,6 +81,8 @@ public abstract class Gun : MonoBehaviour
             {
                 _timeSinceLastShoot = Time.time;
                 var bullet = BulletPool.Instance.GetBulletFromPool();
+                bullet.GetComponent<Bullet>().Ally = true;
+                bullet.GetComponent<Bullet>().Damage = _damage;
                 bullet.transform.position = _bulletSpawnPosition.position;
                 bullet.transform.rotation = transform.rotation;
                 _delay = _shootDelay;

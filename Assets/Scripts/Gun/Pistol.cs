@@ -7,7 +7,7 @@ public class Pistol : Gun
     override protected void Start()
     {
         base.Start();
-
+        _damage = 1;
     }
 
     override protected void Update()
