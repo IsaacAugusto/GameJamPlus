@@ -17,7 +17,6 @@ public class ReloadInterface : MonoBehaviour
     {
         FollowPlayer();
         ChangeColor();
-        Debug.Log(_frontImage.fillAmount);
     }
 
     public void ReloadBarFill(float bulletsShooted, float magSize)

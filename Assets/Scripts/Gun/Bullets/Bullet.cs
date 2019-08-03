@@ -43,6 +43,8 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        var particle = HitParticlePool.Instance.GetHitParticle();
+        particle.transform.position = transform.position;
         DesactivateBullet();
     }
 }
