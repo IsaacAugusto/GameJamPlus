@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class Player : MonoBehaviour, IDamageble<float>
 {
     [SerializeField] protected float _jumpForce;
-    [SerializeField] protected float _hp;
+    [SerializeField] protected float _hp = 1 ;
     [SerializeField] protected float _moveSpeed;
     [SerializeField] protected LayerMask _groundLayer;
     [SerializeField] protected bool _canJump;
@@ -24,6 +24,7 @@ public abstract class Player : MonoBehaviour, IDamageble<float>
         MovePlayer();
         GroundDetector();
         Jump();
+        CheckHP();
     }
 
     private void MovePlayer()
@@ -66,6 +67,14 @@ public abstract class Player : MonoBehaviour, IDamageble<float>
     public void ReciveDamage(float DamageTaken)
     {
         _hp -= DamageTaken;
+    }
+
+    private void CheckHP()
+    {
+        if (_hp <=0)
+        {
+            Destroy(gameObject);
+        }
     }
     private void OnDrawGizmos()
     {

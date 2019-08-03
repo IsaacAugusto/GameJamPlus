@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float Damage;
+    public float Damage = 1 ;
     [SerializeField] private float _speed;
     private Rigidbody2D _rb;
     private float _startTime;
-    public bool Ally = true;
+    public bool Right = true;
     void Start()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -27,14 +27,7 @@ public class Bullet : MonoBehaviour
 
     private void GoFoward()
     {
-        if (Ally)
-        {
-            _rb.velocity = transform.right * _speed;
-        }
-        else
-        {
-            _rb.velocity = -transform.right * _speed;
-        }
+        _rb.velocity = transform.TransformDirection(Vector2.right) * _speed;
     }
 
     private void DesactivateBullet()
@@ -50,7 +43,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    private void DealDamage(float damage, Collision2D collision)
+    private void DealDamage(float damage, Collider2D collision)
     {
         if (collision.gameObject.GetComponent<IDamageble<float>>() != null)
         {
@@ -58,7 +51,7 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         DealDamage(Damage, collision);
         var particle = HitParticlePool.Instance.GetHitParticle();

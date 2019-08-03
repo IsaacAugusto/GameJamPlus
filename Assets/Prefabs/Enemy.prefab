@@ -183,7 +183,7 @@ MonoBehaviour:
   _groundOrWall:
     serializedVersion: 2
     m_Bits: 256
-  _detectDistance: 8.37
+  _detectDistance: 12.8
   _playerDetected: 0
   _bulletSpawnTransform: {fileID: 1939526433}
   _gunTransform: {fileID: 6310790405238956544}
@@ -290,7 +290,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2622850365076595200}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0063704154, w: 0.99997973}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -298,4 +298,4 @@ Transform:
   - {fileID: 1939526433}
   m_Father: {fileID: 22057973386376395}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.73}

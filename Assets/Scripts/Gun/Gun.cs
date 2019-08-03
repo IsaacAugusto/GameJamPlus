@@ -81,7 +81,6 @@ public abstract class Gun : MonoBehaviour
             {
                 _timeSinceLastShoot = Time.time;
                 var bullet = BulletPool.Instance.GetBulletFromPool();
-                bullet.GetComponent<Bullet>().Ally = true;
                 bullet.GetComponent<Bullet>().Damage = _damage;
                 bullet.transform.position = _bulletSpawnPosition.position;
                 bullet.transform.rotation = transform.rotation;
