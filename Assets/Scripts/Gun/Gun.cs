@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Gun : MonoBehaviour
 {
     [SerializeField] private Transform _bulletSpawnPosition;
+    private ReloadInterface _reloadInterface;
     protected float _damage;
     protected float _magSize = 12;
     protected float _reloadTime = 5;
@@ -15,6 +16,7 @@ public abstract class Gun : MonoBehaviour
     [SerializeField] private float _bulletsShooted;
     virtual protected void Start()
     {
+        _reloadInterface = FindObjectOfType<ReloadInterface>();
         _delay = _shootDelay;
         _canShoot = true;
     }
@@ -32,6 +34,7 @@ public abstract class Gun : MonoBehaviour
         var dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
     }
 
     private void DelayCount()
@@ -42,6 +45,8 @@ public abstract class Gun : MonoBehaviour
         }
     }
 
+
+
     private void ReloadSystem()
     {
         if (_bulletsShooted > 0)
@@ -50,12 +55,14 @@ public abstract class Gun : MonoBehaviour
             {
                 _bulletsShooted -= Time.deltaTime * 5;
             }
-            if (_bulletsShooted >= 12 && _canShoot)
+            if (_bulletsShooted >= _magSize && _canShoot)
             {
                 _canShoot = false;
                 StartCoroutine(ReloadCoroutine(_reloadTime));
             }
         }
+
+        _reloadInterface.ReloadBarFill(_bulletsShooted, _magSize);
     }
 
     private IEnumerator ReloadCoroutine(float reloadTime)
