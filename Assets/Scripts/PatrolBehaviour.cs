@@ -26,6 +26,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     private Animator _anim;
     private Transform _playerTransform;
     private Vector2 dir;
+    private AudioSource _source;
 
     [SerializeField] private Transform _bulletSpawnTransform;
     [SerializeField] private Transform _gunTransform;
@@ -37,6 +38,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     private void Start()
     {
         _anim = GetComponent<Animator>();
+        _source = GetComponent<AudioSource>();
         if (!_playerDetected)
             _playerTransform = FindObjectOfType<Player>().transform;
         _gunSprite = _gunTransform.GetComponentInChildren<SpriteRenderer>();
@@ -162,6 +164,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
             var bullet = BulletPool.Instance.GetBulletFromPool();
             bullet.GetComponent<Bullet>().Damage = 1;
             bullet.transform.position = _bulletSpawnTransform.position;
+            _source.Play();
             bullet.transform.rotation = _gunTransform.rotation;
             _shootTimer = _shootDelay;
         }
