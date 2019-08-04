@@ -95,7 +95,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     private bool CheckWall()
     {
         Debug.DrawRay(transform.position + Vector3.down * 0.5f, transform.right * 1.5f, Color.yellow);
-        return Physics2D.Raycast(transform.position + Vector3.down * 0.5f, transform.right, _checkWallDistance, _groundOrWall);
+        return Physics2D.Raycast(transform.position + Vector3.down, transform.right, _checkWallDistance, _groundOrWall);
 
     }
 
