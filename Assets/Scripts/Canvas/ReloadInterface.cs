@@ -43,6 +43,6 @@ public class ReloadInterface : MonoBehaviour
 
     private void FollowPlayer()
     {
-        transform.position = Camera.main.WorldToScreenPoint(_player.position + Vector3.up * 1.5f);
+        transform.position = Camera.main.WorldToScreenPoint(_player.position + Vector3.up * 2.2f);
     }
 }
