@@ -22,6 +22,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     [SerializeField] private bool _enemyDetected = false;
     [SerializeField] private bool _wallDetected = false;
     [SerializeField] private bool _groundDetected = false;
+    private SpriteRenderer _gunSprite;
     private Animator _anim;
     private Transform _playerTransform;
     private Vector2 dir;
@@ -38,6 +39,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
         _anim = GetComponent<Animator>();
         if (!_playerDetected)
             _playerTransform = FindObjectOfType<Player>().transform;
+        _gunSprite = _gunTransform.GetComponentInChildren<SpriteRenderer>();
     }
     void Update()
     {
@@ -62,14 +64,9 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
         DetectPlayer();
         if (_playerDetected)
         {
-            _anim.SetBool("IsShooting", true);
             FireState();
-            AimAtPlayer();
         }
-        else
-        {
-            _anim.SetBool("IsShooting", false);
-        }
+        AimAtPlayer();
     }
     private void FlipDirection()
     {
@@ -87,7 +84,11 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     {
         if (!_playerDetected)
         {
-            _rigidbody.velocity = dir * _velocity;
+            _rigidbody.velocity = new Vector2((dir * _velocity).x, _rigidbody.velocity.y);
+        }
+        else
+        {
+            _rigidbody.velocity = Vector2.up * _rigidbody.velocity.y;
         }
     }
 
@@ -130,14 +131,17 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     {
         if (_playerTransform)
         {
-            hit = Physics2D.Raycast(transform.position, _playerTransform.position - transform.position, _detectDistance, LayerMask.GetMask("Ground"));
+            hit = Physics2D.Raycast(transform.position, _playerTransform.position - transform.position, Vector3.Distance(transform.position, _playerTransform.position), LayerMask.GetMask("Ground"));
             if (hit == true)
             {
                 _playerDetected = false;
+                _anim.SetBool("IsShooting", false);
             }
             else
             {
+                Debug.DrawRay(transform.position, (_playerTransform.position - transform.position) * 5, Color.cyan);
                 _playerDetected = Physics2D.OverlapCircle(transform.position, _detectDistance, LayerMask.GetMask("Player"));
+                _anim.SetBool("IsShooting", true);
             }
         }
     }
@@ -171,12 +175,14 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
             {
                 var dir = _playerTransform.position - _gunTransform.position;
                 var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                _gunSprite.flipY = (Mathf.Abs(angle) > 90);
                 _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             }
             else
             {
                 var dir = _playerTransform.position - _gunTransform.position;
                 var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                _gunSprite.flipY = (Mathf.Abs(angle) > 90);
                 _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
             }
         }
