@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 22057973386376394}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -123,7 +123,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 22057973386376399}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: c83481a9096404a488f57d3f6043f0b2, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   _velocity: 3
   _checkGroundDistance: 2.24
   _checkWallDistance: 1.5
+  _shootDelay: 0
   _checkGroundAngle: 55
   _groundOrWall:
     serializedVersion: 2

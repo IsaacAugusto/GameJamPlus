@@ -1,145 +1,135 @@
 ﻿using System;
 using UnityEngine;
 
+public delegate void EnemyEvent(PatrolBehaviour enemy);
+
 public class PatrolBehaviour : MonoBehaviour, IDamageble<float> {
-    [SerializeField] private float _hp = 5;
-    [SerializeField] private SpriteRenderer _sprite;
-    [SerializeField] private Rigidbody2D _rigidbody;
-    [SerializeField] private float _velocity = 5;
-    [SerializeField] private float _checkGroundDistance = 5;
-    [SerializeField] private float _checkWallDistance = 5;
-    [SerializeField] [Range(0, 360)] private float _checkGroundAngle;
-    [SerializeField] private LayerMask _groundOrWall;
-    [SerializeField] private float _detectDistance;
-    [SerializeField] private bool _playerDetected = false;
-    private Transform _playerTransform;
-    private Vector2 dir;
+  public static event EnemyEvent OnEnemyDied;
 
-    [SerializeField] private Transform _bulletSpawnTransform;
-    [SerializeField] private Transform _gunTransform;
-    private float _shootDelay;
-    private RaycastHit2D hit;
+  [SerializeField] private float _hp = 5;
+  [SerializeField] private SpriteRenderer _sprite;
+  [SerializeField] private Rigidbody2D _rigidbody;
+  [SerializeField] private float _velocity = 5;
+  [SerializeField] private float _checkGroundDistance = 5;
+  [SerializeField] private float _checkWallDistance = 3;
+  [SerializeField] private float _shootDelay = .5f;
+  [SerializeField] [Range(0, 360)] private float _checkGroundAngle;
+  [SerializeField] private LayerMask _groundOrWall;
+  [SerializeField] private float _detectDistance;
+  [SerializeField] private bool _playerDetected = false;
+  private Transform _playerTransform;
+  private Vector2 dir;
 
-    private Vector3 _checkGroundDir;
-    private Vector3 _checkWallDir;
+  [SerializeField] private Transform _bulletSpawnTransform;
+  [SerializeField] private Transform _gunTransform;
+  private float _shootTimer;
+  private RaycastHit2D hit;
+
+  private Vector3 _checkGroundDir;
+  private Vector3 _checkWallDir;
 
 
-    private void Start()
-    {
-        if (!_playerDetected)
-        _playerTransform = FindObjectOfType<Player>().transform;
+  private void Start() {
+    if (!_playerDetected)
+      _playerTransform = FindObjectOfType<Player>().transform;
+  }
+  void Update() {
+    _checkWallDir = transform.TransformDirection(Vector2.right);
+    dir = transform.TransformDirection(Vector2.right);
+    _checkGroundDir = Quaternion.AngleAxis(_checkGroundAngle, Vector3.back) * dir;
+
+    if (!CheckGround() || CheckWall())
+      FlipDirection();
+
+    Move();
+    CheckDeath();
+    DetectPlayer();
+    if (_playerDetected) {
+      FireState();
     }
-    void Update() {
-        _checkWallDir = transform.TransformDirection(Vector2.right);
-        dir = transform.TransformDirection(Vector2.right);
-        _checkGroundDir = Quaternion.AngleAxis(_checkGroundAngle, Vector3.back) * dir;
+    AimAtPlayer();
+  }
+  private void FlipDirection() {
+    transform.rotation = Quaternion.Euler(0, 180, 0);
+  }
 
-        if (!CheckGround() || CheckWall())
-          FlipDirection();
-
-        Move();
-        CheckDeath();
-        DetectPlayer();
-        if (_playerDetected)
-        {
-            FireState();
-        }
-        AimAtPlayer();
+  private void Move() {
+    if (!_playerDetected) {
+      _rigidbody.velocity = dir * _velocity;
     }
-    private void FlipDirection() {
-        transform.rotation = Quaternion.Euler(0, 180, 0);
+  }
+
+  private bool CheckWall() {
+    return Physics2D.Raycast(transform.position, _checkWallDir, _checkWallDistance, _groundOrWall).collider;
+
+  }
+
+  private bool CheckGround() {
+    return Physics2D.Raycast(transform.position, _checkGroundDir, _checkGroundDistance, _groundOrWall).collider;
+  }
+
+  private void OnDrawGizmosSelected() {
+    Gizmos.color = Color.red;
+    Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector2.right) * _checkGroundDistance);
+    Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector2.right) * _checkWallDistance);
+    //Gizmos.DrawWireSphere(transform.position, _detectDistance);
+    //Gizmos.color = Color.green;
+    //Gizmos.DrawRay(transform.position, (_playerTransform.position - transform.position) * _detectDistance);
+  }
+
+  private void DetectPlayer() {
+    if (_playerTransform) {
+      hit = Physics2D.Raycast(transform.position, _playerTransform.position - transform.position, _detectDistance, LayerMask.GetMask("Ground"));
+      if (hit == true) {
+        _playerDetected = false;
+      }
+      else {
+        _playerDetected = Physics2D.OverlapCircle(transform.position, _detectDistance, LayerMask.GetMask("Player"));
+      }
     }
+  }
 
-    private void Move()
-    {
-        if (!_playerDetected)
-        {
-            _rigidbody.velocity = dir * _velocity;
-        }
+  private void FireState() {
+    if (_playerTransform.position.x < transform.position.x) {
+      transform.rotation = Quaternion.Euler(0, 180, 0);
     }
-
-    private bool CheckWall()
-    {
-        return Physics2D.Raycast(transform.position, _checkWallDir, _checkWallDistance, _groundOrWall).collider;
-
+    else {
+      transform.rotation = Quaternion.identity;
     }
-
-    private bool CheckGround() {
-        return Physics2D.Raycast(transform.position, _checkGroundDir, _checkGroundDistance, _groundOrWall).collider;
+    _shootTimer -= Time.deltaTime;
+    if (_shootTimer <= 0) {
+      var bullet = BulletPool.Instance.GetBulletFromPool();
+      bullet.GetComponent<Bullet>().Damage = 1;
+      bullet.transform.position = _bulletSpawnTransform.position;
+      bullet.transform.rotation = _gunTransform.rotation;
+      _shootTimer = _shootDelay;
     }
+  }
 
-    private void OnDrawGizmosSelected() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector2.right) * _checkGroundDistance);
-        Gizmos.DrawLine(transform.position, transform.position + transform.TransformDirection(Vector2.right) * _checkWallDistance);
-        //Gizmos.DrawWireSphere(transform.position, _detectDistance);
-        //Gizmos.color = Color.green;
-        //Gizmos.DrawRay(transform.position, (_playerTransform.position - transform.position) * _detectDistance);
-    }
-
-    private void DetectPlayer()
-    {
-        hit = Physics2D.Raycast(transform.position, _playerTransform.position - transform.position, _detectDistance, LayerMask.GetMask("Ground"));
-        if (hit == true)
-        {
-            _playerDetected = false;
-        }
-        else
-        {
-            _playerDetected = Physics2D.OverlapCircle(transform.position, _detectDistance, LayerMask.GetMask("Player"));
-        }
-    }
-    private void FireState()
-    {
-        if (_playerTransform.position.x < transform.position.x)
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-        else
-        {
-            transform.rotation = Quaternion.identity;
-        }
-        _shootDelay -= Time.deltaTime;
-        if (_shootDelay <= 0)
-        {
-            var bullet = BulletPool.Instance.GetBulletFromPool();
-            bullet.GetComponent<Bullet>().Damage = 1;
-            bullet.transform.position = _bulletSpawnTransform.position;
-            bullet.transform.rotation = _gunTransform.rotation;
-            _shootDelay = .4f;
-        }
-    }
-
-    private void AimAtPlayer()
-    {
-        if (_playerDetected)
-        {
-            if (transform.localRotation.y == 0)
-            {
-                var dir = _playerTransform.position - _gunTransform.position;
-                var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            }
-            else
-            {
-                var dir = _playerTransform.position - _gunTransform.position;
-                var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            }
-        }
-
+  private void AimAtPlayer() {
+    if (_playerDetected) {
+      if (transform.localRotation.y == 0) {
+        var dir = _playerTransform.position - _gunTransform.position;
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+      }
+      else {
+        var dir = _playerTransform.position - _gunTransform.position;
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        _gunTransform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+      }
     }
 
-    private void CheckDeath()
-    {
-        if (_hp <= 0)
-        {
-            Destroy(gameObject);
-        }
-    }
+  }
 
-    public void ReciveDamage(float DamageTaken)
-    {
-        _hp -= DamageTaken;
+  private void CheckDeath() {
+    if (_hp <= 0) {
+      OnEnemyDied?.Invoke(this);
+      Destroy(gameObject);
     }
+  }
+
+  public void ReciveDamage(float DamageTaken) {
+    _hp -= DamageTaken;
+  }
 }
