@@ -22,6 +22,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
     [SerializeField] private bool _enemyDetected = false;
     [SerializeField] private bool _wallDetected = false;
     [SerializeField] private bool _groundDetected = false;
+    private Animator _anim;
     private Transform _playerTransform;
     private Vector2 dir;
 
@@ -34,6 +35,7 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
 
     private void Start()
     {
+        _anim = GetComponent<Animator>();
         if (!_playerDetected)
             _playerTransform = FindObjectOfType<Player>().transform;
     }
@@ -60,8 +62,13 @@ public class PatrolBehaviour : MonoBehaviour, IDamageble<float>
         DetectPlayer();
         if (_playerDetected)
         {
+            _anim.SetBool("IsShooting", true);
             FireState();
             AimAtPlayer();
+        }
+        else
+        {
+            _anim.SetBool("IsShooting", false);
         }
     }
     private void FlipDirection()
