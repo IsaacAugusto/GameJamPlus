@@ -15,11 +15,13 @@ public abstract class Gun : MonoBehaviour {
   [SerializeField] private float _bulletsShooted;
   private SpriteRenderer _sprite;
   private SpriteRenderer _playerSprite;
+  private Animator _animator;
 
   virtual protected void Start() {
     _reloadInterface = FindObjectOfType<ReloadInterface>();
     _sprite = GetComponent<SpriteRenderer>();
     _playerSprite = FindObjectOfType<Player>().GetComponent<SpriteRenderer>();
+    _animator = GetComponent<Animator>();
     _delay = _shootDelay;
     _canShoot = true;
   }
@@ -79,6 +81,8 @@ public abstract class Gun : MonoBehaviour {
         bullet.transform.rotation = transform.rotation;
         _delay = _shootDelay;
         _bulletsShooted++;
+
+        _animator.SetTrigger("Shoot");
       }
     }
   }

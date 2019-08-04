@@ -9,7 +9,7 @@ public abstract class Player : MonoBehaviour, IDamageble<float> {
   [SerializeField] protected float _moveSpeed;
   [SerializeField] protected float _runningMultiplier = 2;
   [SerializeField] protected LayerMask _groundLayer;
-  [SerializeField] protected bool _canJump;
+  [SerializeField] protected bool _isGrounded;
   private float _fallMult = 2.5f;
   private float _lowFallMult = 2;
   protected Rigidbody2D _rb;
@@ -17,6 +17,7 @@ public abstract class Player : MonoBehaviour, IDamageble<float> {
   private SpriteRenderer _sprite;
   private Animator _animator;
   private bool _isRunning;
+  private bool _canJump = false;
 
   virtual protected void Start() {
     _rb = GetComponent<Rigidbody2D>();
@@ -54,6 +55,7 @@ public abstract class Player : MonoBehaviour, IDamageble<float> {
   private void Jump() {
     if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.Space)) {
       if (_canJump) {
+        _canJump = false;
         _rb.AddForce(Vector2.up * _jumpForce);
       }
     }
@@ -67,9 +69,12 @@ public abstract class Player : MonoBehaviour, IDamageble<float> {
   }
 
   private void GroundDetector() {
-    _canJump = Physics2D.Raycast(transform.position, Vector2.down, 2f, _groundLayer)
+    _isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 2f, _groundLayer)
     || Physics2D.Raycast(transform.position + Vector3.right * .5f, Vector2.down, 2f, _groundLayer)
     || Physics2D.Raycast(transform.position - Vector3.right * .5f, Vector2.down, 2f, _groundLayer);
+    _animator.SetBool("IsGrounded", _isGrounded);
+    if (_isGrounded)
+      _canJump = true;
   }
 
 
@@ -85,9 +90,9 @@ public abstract class Player : MonoBehaviour, IDamageble<float> {
   private void OnDrawGizmos() {
     Gizmos.color = Color.red;
 
-    Gizmos.DrawRay(transform.position, Vector2.down * 2.5f);
-    Gizmos.DrawRay(transform.position + Vector3.right * .5f, Vector2.down * 2.5f);
-    Gizmos.DrawRay(transform.position - Vector3.right * .5f, Vector2.down * 2.5f);
+    Gizmos.DrawRay(transform.position, Vector2.down * 2f);
+    Gizmos.DrawRay(transform.position + Vector3.right * .5f, Vector2.down * 2f);
+    Gizmos.DrawRay(transform.position - Vector3.right * .5f, Vector2.down * 2f);
   }
 
 
