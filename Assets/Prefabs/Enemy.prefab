@@ -176,7 +176,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e677b4e8fe0b016468dc55f7d50fdeca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hp: 5
+  _hp: 3
   _sprite: {fileID: 22057973386376396}
   _rigidbody: {fileID: 22057973386376398}
   _velocity: 3
