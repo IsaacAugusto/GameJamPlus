@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 22057973386376397}
   - component: {fileID: 22057973386376398}
   - component: {fileID: 22057973386376394}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -179,13 +179,19 @@ MonoBehaviour:
   _velocity: 3
   _checkGroundDistance: 2.24
   _checkWallDistance: 1.5
-  _shootDelay: 0
+  _shootDelay: 1
   _checkGroundAngle: 55
   _groundOrWall:
     serializedVersion: 2
     m_Bits: 256
-  _detectDistance: 12.8
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  _detectDistance: 12
   _playerDetected: 0
+  _enemyDetected: 0
+  _wallDetected: 0
+  _groundDetected: 0
   _bulletSpawnTransform: {fileID: 1939526433}
   _gunTransform: {fileID: 6310790405238956544}
 --- !u!1 &1234421876366182638

@@ -12,8 +12,6 @@ public class BasicPlayer : Player, IDamageble<float>
     protected override void Update()
     {
         base.Update();
-        Debug.Log(_hp);
-        Debug.Log(base._hp);
     }
 
 }
